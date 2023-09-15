@@ -1,7 +1,18 @@
-# lab03
+Отчет ЛР3
+Задание 1
+Вам поручили перейти на систему автоматизированной сборки CMake. Исходные файлы находятся в директории formatter_lib. В этой директории находятся файлы для статической библиотеки formatter. Создайте CMakeList.txt в директории formatter_lib, с помощью которого можно будет собирать статическую библиотеку formatter.
 
-Содержание файла
-lab03/formatter_lib/CMakeLists.txt
+Задание 2
+У компании "Formatter Inc." есть перспективная библиотека, которая является расширением предыдущей библиотеки. Т.к. вы уже овладели навыком созданием CMakeList.txt для статической библиотеки formatter, ваш руководитель поручает заняться созданием CMakeList.txt для библиотеки formatter_ex, которая в свою очередь использует библиотеку formatter.
+
+Задание 3
+Конечно же ваша компания предоставляет примеры использования своих библиотек. Чтобы продемонстрировать как работать с библиотекой formatter_ex, вам необходимо создать два CMakeList.txt для двух простых приложений:
+
+hello_world, которое использует библиотеку formatter_ex;
+solver, приложение которое испольует статические библиотеки formatter_ex и solver_lib.
+
+
+CmakeLists.txt для задания 1
 
 cmake_minimum_required(VERSION 3.4)
 
@@ -12,3 +23,38 @@ project(formatter)
 
 add_library(formatter STATIC formatter.cpp)
 target_include_directories(formatter PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+CmakeLists.txt для задания 2
+
+cmake_minimum_required(VERSION 3.4)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(formatter_ex)
+
+add_library(formatter_ex STATIC formatter_ex.cpp)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_lib ${CMAKE_CURRENT_BINARY_DIR}/formatter)
+target_include_directories(formatter_ex PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_libraries(formatter_ex formatter)
+
+CmakeLists.txt для задания 3
+
+cmake_minimum_required(VERSION 3.4)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(hello_world_example)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../formatter_ex_lib ${CMAKE_CURRENT_BINARY_DIR}/formatter_ex)
+add_executable(example hello_world.cpp)
+
+target_link_libraries(example formatter_ex)
+
+Для сборки проектов использовались комманды
+
+cmake -H. -B_build
+cmake --build
